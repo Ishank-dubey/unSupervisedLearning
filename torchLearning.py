@@ -46,4 +46,19 @@ print(c, d, K)
 #if the other is not having and axis as one then it will NOT be the one to get broadcasted
 
 
-#Running operations can cause new memory to be allocated to host results
+#Running operations can cause new memory to be allocated to host results -
+# Need to Save Memory using the inplace operators to assign results
+
+# Problem -
+before = id(Y)
+Y = Y + X
+id(Y) == before
+
+#Using inplace the address will be remaining the same
+Z = torch.zeros_like(Y)
+print('id(Z):', id(Z))
+Z[:] = X + Y
+print('id(Z):', id(Z))
+# even the operator like X += Y is inplace
+
+# n dimensional array is a Tensor
