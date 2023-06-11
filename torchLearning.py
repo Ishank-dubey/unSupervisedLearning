@@ -37,7 +37,7 @@ print(a, b)
 
 c = torch.arange(24).reshape((6, 4)) # 3x2
 d = torch.arange(4).reshape((1, 4)) # 1 X 2
-#So the matrix will get relicated along the axis of the dimension one
+#So the matrix will get repicated along the axis of the dimension one
 
 K = c + d
 print(c, d, K)
@@ -62,3 +62,36 @@ print('id(Z):', id(Z))
 # even the operator like X += Y is inplace
 
 # n dimensional array is a Tensor
+
+
+
+#DATA manipulation
+import os
+import pandas as pd
+cwd = os.getcwd()
+
+targetPath = os.path.join(cwd, 'data')
+#os.makedirs(os.path.join('..', 'data'), exist_ok=True)
+data_file = os.path.join(targetPath, 'house_tiny.csv')
+with open(data_file, 'w') as f:
+    f.write('''NumRooms,RoofType,Price
+NA,NA,127500
+2,NA,106000
+4,Slate,178100
+NA,NA,140000''')
+
+data = pd.read_csv(data_file)
+print(data)
+
+
+abalone_data = pd.read_csv("./data/abalone.data",
+                           names = [
+                               "sex", "length", "diameter", "height",
+                               "whole_weight", "shucked_weight",
+                               "viscera_weight", "shell_weight",
+                               "rings"
+                           ]
+                          )
+
+print(abalone_data.describe(include = "all"))
+print(abalone_data["sex"][0:20])
