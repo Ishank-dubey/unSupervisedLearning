@@ -3,7 +3,9 @@ import torch
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
 import torch.nn as nn
-
+import torch.utils.data
+import torch.utils.tensorboard.writer
+from torch.utils.tensorboard.writer import SummaryWriter
 """
 We generate synthetic data here, get the output labels based on a predefined w and b
 We are trying to see how the gradient descend works
@@ -313,3 +315,178 @@ model.add_module('layer1', nn.Linear(3, 5))
 model.add_module('layer2', nn.Linear(5, 1))
 model.to(device)
 print(model.state_dict())#the parameter names are now having names
+
+
+#Since we want to also encapsulate the loss, modal, optimizer into a Higher order function, lets check on them
+def exponential_builder(exponent):
+    def skeleton_exponentiation(x):
+        return x ** exponent
+    return skeleton_exponentiation
+
+exponentialFn = exponential_builder(2)
+print(exponentialFn(5))
+
+#Use the higher order function to build a training function
+def make_train_step_fn(model, loss_fn, optimizer):
+    def perform_train_step_fn(x, y):
+        model.train()
+        yhat = model(x)
+        loss = loss_fn(yhat, y)
+        loss.backward()
+        optimizer.step()
+        optimizer.zero_grad()
+        return loss.item()
+    return perform_train_step_fn
+
+
+#Train again using this functions
+lr = .1
+torch.manual_seed(42)
+model = nn.Sequential(nn.Linear(1, 1)).to(device)
+loss_fn = nn.MSELoss(reduction='mean')
+optimizer = torch.optim.SGD(model.parameters(), lr=lr)
+train_function = make_train_step_fn(model, loss_fn, optimizer)
+losses = []
+
+for i in range(n_epochs):
+    loss = train_function(x_train_tensor, y_train_tensor)
+    losses.append(loss)
+
+print(model.state_dict())
+
+
+#DataSet, TensorDataSet
+
+class CustomDataSet(torch.utils.data.Dataset):
+    def __init__(self, x_tensor, y_tensor):
+        self.x = x_tensor
+        self.y = y_tensor
+    def __getitem__(self, item):
+        print('okyyy', item)
+        return (self.x[item], self.y[item])
+    def __len__(self):
+        return len(self.x)
+x_train_tensor = torch.as_tensor(x_train).float()
+y_train_tensor = torch.as_tensor(y_train).float()
+# we dont convert every tensor to a GPU tensor so as to save the GPU
+train_data = CustomDataSet(x_train_tensor, y_train_tensor)
+print(train_data[2])
+
+#Use the TensorDataset when the Tensor count is small
+# Basically the Dataloaders help us to go for the mini batch gradient descent and it also takes care of shuffeling that is indicated by a flag
+# Shuffling is not needed in the time series training sets
+
+def reset():
+    for layer in model.children():
+        if hasattr(layer, 'reset_parameters'):
+            layer.reset_parameters()
+
+reset()
+train_data = torch.utils.data.TensorDataset(x_train_tensor, y_train_tensor)
+
+train_loader = torch.utils.data.DataLoader(dataset=train_data, shuffle=True, batch_size=16)
+losses = []
+for i in range(n_epochs):
+    losses_batches = []
+    for x_batch, y_batch in train_loader:
+        x_batch = x_batch.to(device)
+        y_batch = y_batch.to(device)
+        loss = train_function(x_batch, y_batch)
+        losses_batches.append(loss)
+    losses.append(np.mean(losses_batches))
+print(model.state_dict(), 'TEST1')
+
+#Lets do all the steps in a single function i.e. data loader and device function
+def mini_batch(device, data_loader, step_fn):
+    batch_losses = []
+    for x_batch, y_batch in data_loader:
+        x_batch = x_batch.to(device)
+        y_batch = y_batch.to(device)
+        batch_losses.append(step_fn(x_batch, y_batch))
+    return np.mean(batch_losses)
+
+
+reset()
+
+losses = []
+for i in range(n_epochs):
+    loss = mini_batch(device, train_loader, train_function)
+    losses.append(loss)
+print(model.state_dict(), 'TEST2')
+
+#Training validation split - torch.random_split()
+
+torch.manual_seed(13)
+x_tensor = torch.as_tensor(x).float()
+y_tensor = torch.as_tensor(y).float()
+dataset = torch.utils.data.TensorDataset(
+    x_tensor, y_tensor
+)
+ratio = .8
+n_total = len(dataset)
+n_train = int(ratio * n_total)
+n_validation = n_total - n_train
+train_data_1, val_data = torch.utils.data.random_split(dataset, [n_train, n_validation])
+
+train_loader = torch.utils.data.DataLoader(batch_size=16, dataset=train_data_1, shuffle=True)
+validation_loader = torch.utils.data.DataLoader(batch_size=16, dataset=val_data)# no point in giving the shuffle as True for the validation set
+
+def make_val_step_fn(model, loss_fn):
+    def perform_val_step_fn(x, y):
+        model.eval()
+        yhat = model(x)
+        loss = loss_fn(yhat, y)
+        return loss.item()
+    return perform_val_step_fn
+
+
+reset()
+val_step_fn = make_val_step_fn(model, loss_fn)
+n_epochs = 200
+
+losses = []
+val_losses = []
+writer = SummaryWriter('runs/test')
+x_batch_1, y_batch_1 = next(iter(train_loader))
+writer.add_graph(model, x_batch_1.to(device))
+for epoch in range(n_epochs):
+    # inner loop
+    loss = mini_batch(device, train_loader, train_function)
+    losses.append(loss)
+
+    # VALIDATION
+    # no gradients in validation!
+    with torch.no_grad():
+        val_loss = mini_batch(device, validation_loader, val_step_fn)
+        val_losses.append(val_loss)
+    writer.add_scalars(main_tag='losses', tag_scalar_dict={
+        'training':loss,
+        'validation':val_loss
+    }, global_step=epoch)
+writer.close()
+print(model.state_dict(), 'FINAL_200')
+
+
+#Saving and loading models
+#Saving the model to a disk is important to restart training
+#Model state - checkpoint a model includes - model.state_dict(), optimizer.state_dict(), losses, epoch etc..
+#
+#checkpoint = {
+# 'epoch':n_epochs
+# 'model_state_dict':model.state_dic(),
+# 'optimizer_state_dict':optimizer.state_dic(),
+# 'loss':losses,
+# 'val_loss': val_losses
+# }
+# torch.save(checkpoint, 'model_checkpoint.pth')
+# Loading the checkpoint back -
+# checkpoint = torch.load('model_checkpoint.pth')
+# model.load_state_dict(checkpoint['model_state_dict'])
+# optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+# model.train()/model.eval() <-- needed to restart  the training checkpointing or deployment respectively
+# Configure Data(random split, conversion to tensors, dataset, dataset loader),
+# Configure the Model like optimizer, loss_fn, model class, step functions, summary writer
+# Finally Train
+
+
+#xxxxxxxxxxxxxxx------End of chapter 2-------xxxxxxxxxxxx#
