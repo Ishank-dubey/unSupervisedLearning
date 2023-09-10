@@ -455,7 +455,7 @@ for epoch in range(n_epochs):
     losses.append(loss)
 
     # VALIDATION
-    # no gradients in validation!
+    # no gradients update in validation!
     with torch.no_grad():
         val_loss = mini_batch(device, validation_loader, val_step_fn)
         val_losses.append(val_loss)
