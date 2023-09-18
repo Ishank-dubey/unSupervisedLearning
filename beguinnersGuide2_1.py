@@ -2,6 +2,7 @@
 
 import numpy as np
 import datetime
+import random
 import torch
 import torch.optim as optim
 import torch.nn as nn
@@ -83,6 +84,11 @@ class StepByStep(object):
         torch.backends.cudnn.benchmark = False
         torch.manual_seed(seed)
         np.random.seed(seed)
+        random.seed(seed)
+        try:
+           self.train_loader.sampler.generator.manual_seed(seed)
+        except AttributeError:
+            pass
     def train(self, n_epochs, seed=42):
         self.set_seed(seed)
         for i in range(n_epochs):

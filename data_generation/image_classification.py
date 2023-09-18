@@ -31,10 +31,10 @@ def gen_img(start, target, fill=1, img_size=10):
             img[up] = fill
         else:
             if start_row is not None:
-                down = (range(start_row, img_size, 1), 
+                    down = (range(start_row, img_size, 1),
                         range(0, img_size - start_row))
             else:
-                down = (range(0, img_size - 1 - start_col + 1), 
+                down = (range(0, img_size - 1 - start_col + 1),
                         range(start_col, img_size))
             img[down] = fill
     
