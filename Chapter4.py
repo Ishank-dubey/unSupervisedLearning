@@ -167,3 +167,22 @@ def make_sampler(y):
 sample_test = next(iter(train_loader))
 print(sample_test[0])
 print(sample_test[0].shape)
+
+
+#Now its a linear modal
+lr = .1
+torch.manual_seed(17)
+modal = nn.Sequential()
+modal.add_module('flatten', nn.Flatten())
+modal.add_module('hidden0', nn.Linear(25, 5, bias=False))
+modal.add_module('hidden1', nn.Linear(5, 3, bias=False))
+modal.add_module('hidden2', nn.Linear(3, 1, bias=False))
+modal.add_module('sigmoid', nn.Sigmoid())
+optimizer = optim.SGD(modal.parameters(), lr=lr)
+loss_fn = nn.BCELoss()
+
+sbs_nn = StepByStep(modal, loss_fn, optimizer )
+sbs_nn.set_loaders(train_loader, val_loader)
+sbs_nn.train(100)
+fig = sbs_nn.plot_losses()
+#fig.plot()
