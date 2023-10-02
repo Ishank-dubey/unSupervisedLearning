@@ -23,28 +23,31 @@ def download_to_colab(branch='master'):
     path = os.path.join('data_generation', 'image_classification.py')
     url = '{}{}'.format(base_url, path)
     r = requests.get(url, allow_redirects=True)
-    open(path, 'wb').write(r.content)
 
-
+    with open(path, 'wb') as file:
+        file.write(r.content)
 
     path = 'util2.py'
     url = '{}{}'.format(base_url, path)
     print(url)
     r = requests.get(url, allow_redirects=True)
-    print(path)
-    open('util2.py', 'wb').write(r.content)
+    with open(path, 'wb') as file:
+        file.write(r.content)
 
     path = 'helpers.py'
     url = '{}{}'.format(base_url, path)
     r = requests.get(url, allow_redirects=True)
-    open(path, 'wb').write(r.content)
+    with open(path, 'wb') as file:
+        file.write(r.content)
 
     path = os.path.join('plots', 'chapter5.py')
     url = '{}{}'.format(base_url, path)
     r = requests.get(url, allow_redirects=True)
-    open(path, 'wb').write(r.content)
+    with open(path, 'wb') as file:
+        file.write(r.content)
 
     path = 'StepByStep.py'
     url = '{}{}'.format(base_url, path)
     r = requests.get(url, allow_redirects=True)
-    open(path, 'wb').write(r.content)
+    with open(path, 'wb') as file:
+        file.write(r.content)
