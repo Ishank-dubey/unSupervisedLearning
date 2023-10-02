@@ -108,6 +108,7 @@ def figure7(weights):
     fig.suptitle('Hidden Layer #0')
     fig.subplots_adjust(top=0.6) 
     fig.tight_layout()
+    plt.show()
     return fig
 
 def figure5b(sbs_logistic, sbs_nn, sbs_relu):
@@ -173,6 +174,7 @@ def plot_activation(func, name=None):
 
     fig.tight_layout()
     fig.show()
+    plt.show()
     return fig
 
 def weights_comparison(w_logistic_output, w_nn_equiv):

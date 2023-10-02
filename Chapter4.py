@@ -175,7 +175,9 @@ torch.manual_seed(17)
 modal = nn.Sequential()
 modal.add_module('flatten', nn.Flatten())
 modal.add_module('hidden0', nn.Linear(25, 5, bias=False))
+modal.add_module('activation0', nn.ReLU())
 modal.add_module('hidden1', nn.Linear(5, 3, bias=False))
+modal.add_module('activation1', nn.ReLU())
 modal.add_module('hidden2', nn.Linear(3, 1, bias=False))
 modal.add_module('sigmoid', nn.Sigmoid())
 optimizer = optim.SGD(modal.parameters(), lr=lr)
@@ -186,3 +188,32 @@ sbs_nn.set_loaders(train_loader, val_loader)
 sbs_nn.train(100)
 fig = sbs_nn.plot_losses()
 #fig.plot()
+#now the plot shows that there is not much learning since every hidden layer is not followed by a non lienarity
+#i.e. no activation function, deep learning modals without the activation functions are no better than linear regression
+# in the above modal there are 25*5 + 5*3 + 3*1 = 143 parameters
+
+
+#Generator functions
+#Lambdad functions
+#Reduce
+
+#Weights as Pixels
+
+hidden0 = modal.hidden0.weight.detach()
+#print(hidden0.shape)
+#figure7(hidden0)
+
+
+#Activation functions
+# 1. Sigmoid = 1/(1 + e^-z), gradient = e^-z/(1 + e^-z)^2, activation function ranges from 0, 1 and the gradient max is .25
+# the output of the sigmoid would be centered around .5
+# pytorch has torch.sigmoid() and torch.nn.Sigmoid()
+plot_activation(torch.sigmoid, 'sigmoid')
+
+# 2. Hyperbolic Tangent
+# = (e^z - e^-z)/(e^-z + e^z) ==> range(-1, 1) so the mean is 0 and gradient is max 1, the decresasing of gradient happens at a faster rate
+# so the vanishing gradient is a problem
+# torch.tanh() and torch.nn.Tanh()
+
+# 3. ReLu = max(0, z), its not centered around 0 and can lead to dead neuron so we can eliminate this
+# using the leaky relu = max(0, z) + a * min(0, z)
