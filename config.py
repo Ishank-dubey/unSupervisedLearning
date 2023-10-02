@@ -9,7 +9,7 @@ from tensorboard import manager
 
 
 def download_to_colab(branch='master'):
-    base_url = 'https://raw.githubusercontent.com/Ishank-dubey/unSupervisedLearning/master/{}/'.format(branch)
+    base_url = 'https://raw.githubusercontent.com/Ishank-dubey/unSupervisedLearning/master/'
 
     folders = ['data_generation', 'images', 'plots', 'runs']
     for folder in folders:
@@ -31,6 +31,12 @@ def download_to_colab(branch='master'):
     r = requests.get(url, allow_redirects=True)
     open(path, 'wb').write(r.content)
 
+    pathUtil = os.path.join('util2.py')
+    pathUtil = '{}{}'.format(base_url, pathUtil)
+    print(pathUtil)
+    r = requests.get(pathUtil, allow_redirects=True)
+    open(path, 'wb').write(r.content)
+
     path = os.path.join('helpers.py')
     url = '{}{}'.format(base_url, path)
     r = requests.get(url, allow_redirects=True)
@@ -40,5 +46,3 @@ def download_to_colab(branch='master'):
     url = '{}{}'.format(base_url, path)
     r = requests.get(url, allow_redirects=True)
     open(path, 'wb').write(r.content)
-
-##download_to_colab()
