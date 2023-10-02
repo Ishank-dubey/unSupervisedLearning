@@ -8,3 +8,6 @@
 __pycache__/util2.cpython-39.pyc
 *.pyc
 __pycache__/util2.cpython-39.pyc
+runs/classy_20231002194312/events.out.tfevents.1696255992.Rajneeshs-iMac.local.16815.3
+runs/classy_20231002194312/loss_training/events.out.tfevents.1696255994.Rajneeshs-iMac.local.16815.4
+runs/classy_20231002194312/loss_validation/events.out.tfevents.1696255994.Rajneeshs-iMac.local.16815.5
