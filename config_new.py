@@ -9,7 +9,7 @@ from tensorboard import manager
 
 
 def download_to_colab(branch='master'):
-    base_url = 'https://raw.githubusercontent.com/Ishank-dubey/unSupervisedLearning/master/{}/'.format(branch)
+    base_url = 'https://raw.githubusercontent.com/Ishank-dubey/unSupervisedLearning/master/'
 
     folders = ['data_generation', 'images', 'plots', 'runs']
     for folder in folders:
