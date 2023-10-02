@@ -33,6 +33,7 @@ def download_to_colab(branch='master'):
 
     path = os.path.join('util2.py')
     url = '{}{}'.format(base_url, path)
+    print(url)
     r = requests.get(url, allow_redirects=True)
     open(path, 'wb').write(r.content)
 
