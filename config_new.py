@@ -42,3 +42,9 @@ def download_to_colab(branch='master'):
     open(path, 'wb').write(r.content)
 
 ##download_to_colab()
+
+
+
+
+# This is needed to render the plots in this chapter
+from plots.chapter5 import *
