@@ -19,25 +19,24 @@ def download_to_colab(branch='master'):
                 os.mkdir(folder)
             except OSError as e:
                 print('RAISe')
-                if e.errno != errno.EEXIST:
-                    raise
+
     path = os.path.join('data_generation', 'image_classification.py')
     url = '{}{}'.format(base_url, path)
     r = requests.get(url, allow_redirects=True)
     open(path, 'wb').write(r.content)
 
-    path = os.path.join('StepByStep.py')
+    path = 'StepByStep.py'
     url = '{}{}'.format(base_url, path)
     r = requests.get(url, allow_redirects=True)
     open(path, 'wb').write(r.content)
 
-    pathUtil = os.path.join('util2.py')
-    pathUtil = '{}{}'.format(base_url, pathUtil)
-    print(pathUtil)
-    r = requests.get(pathUtil, allow_redirects=True)
+    path = 'util2.py'
+    url = '{}{}'.format(base_url, path)
+    print(url)
+    r = requests.get(url, allow_redirects=True)
     open(path, 'wb').write(r.content)
 
-    path = os.path.join('helpers.py')
+    path = 'helpers.py'
     url = '{}{}'.format(base_url, path)
     r = requests.get(url, allow_redirects=True)
     open(path, 'wb').write(r.content)
