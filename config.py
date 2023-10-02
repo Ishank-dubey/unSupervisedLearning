@@ -25,10 +25,7 @@ def download_to_colab(branch='master'):
     r = requests.get(url, allow_redirects=True)
     open(path, 'wb').write(r.content)
 
-    path = 'StepByStep.py'
-    url = '{}{}'.format(base_url, path)
-    r = requests.get(url, allow_redirects=True)
-    open(path, 'wb').write(r.content)
+
 
     path = 'util2.py'
     url = '{}{}'.format(base_url, path)
@@ -43,6 +40,11 @@ def download_to_colab(branch='master'):
     open(path, 'wb').write(r.content)
 
     path = os.path.join('plots', 'chapter5.py')
+    url = '{}{}'.format(base_url, path)
+    r = requests.get(url, allow_redirects=True)
+    open(path, 'wb').write(r.content)
+
+    path = 'StepByStep.py'
     url = '{}{}'.format(base_url, path)
     r = requests.get(url, allow_redirects=True)
     open(path, 'wb').write(r.content)
