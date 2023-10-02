@@ -8,7 +8,7 @@ from sklearn.datasets import make_moons
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, roc_curve, precision_recall_curve, auc
-from beguinnersGuide2_1 import StepByStep
+from StepByStep import StepByStep
 from util3 import *
 X, y = make_moons(n_samples=100, noise=.3, random_state=0)
 X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=.2, random_state=13)

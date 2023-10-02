@@ -12,7 +12,7 @@ from torchvision.transforms import Compose, Normalize
 
 from data_generation.image_classification import generate_dataset
 from helpers import index_splitter, make_balanced_sampler
-from beguinnersGuide2_1 import StepByStep
+from StepByStep import StepByStep
 
 
 #'Convolution'
