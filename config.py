@@ -34,7 +34,8 @@ def download_to_colab(branch='master'):
     url = '{}{}'.format(base_url, path)
     print(url)
     r = requests.get(url, allow_redirects=True)
-    open(path, 'wb').write(r.content)
+    print(path)
+    open('util2.py', 'wb').write(r.content)
 
     path = 'helpers.py'
     url = '{}{}'.format(base_url, path)
